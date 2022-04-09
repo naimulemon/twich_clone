@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:twich_clone/resources/auth_mathood.dart';
-import 'package:twich_clone/screens/home_screen.dart';
 import 'package:twich_clone/utils/routes/myroutes.dart';
 import 'package:twich_clone/widgets/coustom_text_field.dart';
+import 'package:twich_clone/widgets/loading_indicator.dart';
 
 import '../widgets/custom_botton.dart';
 
@@ -17,13 +17,28 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailcontroller = TextEditingController();
   final TextEditingController _passwordcontroller = TextEditingController();
   final AuthMethods _authMethods = AuthMethods();
+  bool _isLoading = false;
 
   loginUser() async {
+    setState(() {
+      _isLoading = true;
+    });
+
     bool res = await _authMethods.loginUser(
         context, _emailcontroller.text, _passwordcontroller.text);
+    setState(() {
+      _isLoading = false;
+    });
     if (res) {
       Navigator.pushNamed(context, MyRoutes.homescreen);
     }
+  }
+
+  @override
+  void dispose() {
+    _emailcontroller.dispose();
+    _passwordcontroller.dispose();
+    super.dispose();
   }
 
   @override
@@ -32,7 +47,7 @@ class _LoginScreenState extends State<LoginScreen> {
       appBar: AppBar(
         title: const Text("Login"),
       ),
-      body: SingleChildScrollView(
+      body:_isLoading ? const LodingIndicator(): SingleChildScrollView(
           child: Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: 18,
